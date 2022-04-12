@@ -53,6 +53,11 @@ int
 #endif // WIN32
 	socket_t;
 
+#ifdef _MSC_VER
+// Microsoft Visual C++ is EVIL
+#undef max
+#endif // _MSC_VER
+
 // misc.cpp
 void CloseSocket(socket_t sfd);
 void DoExit(int status);
