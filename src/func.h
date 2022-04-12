@@ -36,8 +36,8 @@ const int RESPOND_CONTENT_LENGTH = std::strlen(RESPOND_CONTENT);
  */
 #ifdef WIN32
 // For Windows
-#include <WinSock2.h>
-#include <WS2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
 // For Linux / Unix
 #include <sys/socket.h>
