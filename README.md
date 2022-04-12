@@ -19,7 +19,7 @@ cmake ../src
 ./HttpEater
 ```
 
-## Compile-time controls:
+## Compile-time controls
 
 - Define `NO_PRINT` to inhibit printing detailed request.
 - Define `DISABLE_MULTI_THREADING` to use single thread.

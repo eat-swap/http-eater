@@ -6,6 +6,7 @@
 // C++ standard headers
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "func.h"
 
@@ -16,8 +17,7 @@ void HandleConnection(socket_t client_fd) {
 	char* buffer = new char[std::max(BUFFER_SIZE + 1, RESPOND_CONTENT_LENGTH + 150)];
 	PRINT_FUNC("------------------------- BEGIN OF REQUEST %llu -------------------------\n", ++reqCnt);
 
-	std::string header;
-	std::vector<char> requestBody;
+	std::vector<char> header, requestBody;
 	int contentLength = 0;
 	bool isRequestBody = false;
 	for (auto bytes_read = recv(client_fd, buffer, BUFFER_SIZE, 0); bytes_read > 0; bytes_read = recv(client_fd, buffer, BUFFER_SIZE, 0)) {
@@ -30,24 +30,30 @@ void HandleConnection(socket_t client_fd) {
 
 				isRequestBody = true;
 
-				for (char& ch : header)
+				std::string headerStr(header.begin(), header.end());
+				for (char& ch : headerStr)
 					ch = std::tolower(ch);
-				auto contentLengthPos = header.find("content-length:");
+				auto contentLengthPos = headerStr.find("content-length:");
 				if (contentLengthPos != std::string::npos)
-					std::sscanf(header.c_str() + contentLengthPos + 15, "%d", &contentLength);
+					std::sscanf(headerStr.c_str() + contentLengthPos + 15, "%d", &contentLength);
 
 				requestBody.insert(requestBody.end(), ptr + 4, buffer + bytes_read);
 			}
 			else {
 				header.insert(header.end(), buffer, buffer + bytes_read);
 			}
-			PRINT_FUNC("%s", buffer);
 		}
 		else {
 			requestBody.insert(requestBody.end(), buffer, buffer + bytes_read);
 		}
 		if (requestBody.size() >= contentLength)
 			break;
+	}
+	if (std::any_of(header.begin(), header.end(), [](char ch) { return !std::isprint(ch) && ch != '\r' && ch != '\n'; }))
+		hexdump(header);
+	else {
+		header.push_back('\0');
+		PRINT_FUNC("%s", header.data());
 	}
 	PRINT_FUNC("\n");
 	if (requestBody.empty())
