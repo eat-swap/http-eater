@@ -2,10 +2,10 @@
 
 ## Description
 
-Simple demo utilizing socket.
+Simple demo utilising socket.
 
 - Listens TCP port 80
-- Responds everything with HTTP response `{"status":"ok")`
+- Responds everything with HTTP response `{"status":"ok"}`
 - Lightweight, multithreading, and (nearly) cross-platform
 
 ## Running
